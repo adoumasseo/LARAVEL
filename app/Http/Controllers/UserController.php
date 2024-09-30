@@ -77,9 +77,9 @@ class UserController extends Controller
             ], 403);
         }
         $validator = Validator::make($request->all(), [
-            'first_name' => "sometimes|nullable|string|max:255",
-            'last_name' => "sometimes|nullable|string|max:255",
-            'password' => 'nullable|string|min:8|confirmed',
+            'first_name' => "sometimes|required|string|max:255",
+            'last_name' => "sometimes|required|string|max:255",
+            'password' => 'nullable|string|min:8',
             'profile' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 

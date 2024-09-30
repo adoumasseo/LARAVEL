@@ -1,66 +1,124 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TodoApp API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
+TodoApp API is a simple task management system with modern authentication and role-based access control. It allows users to create boards, add tasks, manage their status, and perform actions like duplicating, archiving, and more. Admins have additional control over users and can manage the system from a dashboard.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### User Functionalities:
+- **Authentication System:** Secure login, registration, and session management.
+- **Board Management:**
+  - Create a board.
+  - Modify the name or status of a board.
+  - Move a board to trash or restore it from trash.
+  - Duplicate a board (with or without tasks).
+- **Task Management:**
+  - Create, delete, and update tasks in a board.
+  - Change the status of tasks (drag-and-drop functionality on the frontend like Notion).
+  - Edit task content.
+- **Task Status Management:** Users can drag and drop tasks to change their status.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Admin Functionalities:
+- **Dashboard Overview:** Admins can view all registered users.
+- **User Management:**
+  - Add new users with a default password.
+  - Delete users from the system.
+  - When a new user logs in for the first time, they must update their password.
+- **Default Admin:** The first admin is created during the initial setup (seeding).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Entities
 
-## Learning Laravel
+### Users
+- **Fields:**
+  - `user_lastname`: Last name of the user.
+  - `user_firstname`: First name of the user.
+  - `user_email`: Email address of the user (used for login).
+  - `password`: Hashed password.
+  - `user_profile`: URL or path to the user's profile picture.
+  - `user_role`: Role of the user (e.g., `user`, `admin`).
+  - `created_at`: Timestamp of user creation.
+  - `updated_at`: Timestamp of the last user update.
+  - `deleted_at`: Timestamp of user deletion (if soft-deleted).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Boards
+- **Fields:**
+  - `board_name`: Name of the board.
+  - `board_status`: Status of the board (e.g., `active`, `archived`).
+  - `created_at`: Timestamp of board creation.
+  - `deleted_at`: Timestamp of board deletion (if moved to trash).
+  - `updated_at`: Timestamp of the last board update.
+  
+- **Relationships:**
+  - A user can have zero or many boards.
+  - Each board belongs to one user.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Tasks
+- **Fields:**
+  - `task_content`: Content or description of the task.
+  - `status`: Current status of the task (e.g., `pending`, `in-progress`, `completed`).
+  - `created_at`: Timestamp of task creation.
+  - `updated_at`: Timestamp of the last task update.
+  - `deleted_at`: Timestamp of task deletion (if moved to trash).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Relationships:**
+  - A board can have zero or more tasks.
+  - Each task belongs to one board.
 
-## Laravel Sponsors
+## API Endpoints
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Authentication
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/logout` - Logout user
 
-### Premium Partners
+### User Management
+- `GET /api/users` - Get all users (Admin only)
+- `POST /api/users` - Add a new user (Admin only)
+- `DELETE /api/users/:id` - Delete a user (Admin only)
+- `PATCH /api/users/:id` - Update user info (Admin only)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Board Management
+- `GET /api/boards` - Get all boards for the authenticated user
+- `POST /api/boards` - Create a new board
+- `PATCH /api/boards/:id` - Update board details (name, status)
+- `DELETE /api/boards/:id` - Move board to trash
+- `POST /api/boards/:id/duplicate` - Duplicate a board (with or without tasks)
+  
+### Task Management
+- `GET /api/boards/:id/tasks` - Get all tasks for a board
+- `POST /api/boards/:id/tasks` - Create a new task in a board
+- `PATCH /api/boards/:id/tasks/:taskId` - Update task details (content, status)
+- `DELETE /api/boards/:id/tasks/:taskId` - Delete a task
 
-## Contributing
+## Setup and Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Prerequisites
+- Python 3.x
+- Flask
+- Flask extensions (e.g., `Flask-JWT-Extended` for authentication, `SQLAlchemy` for ORM)
+- Postman for API testing
 
-## Code of Conduct
+### Installation Steps
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/your-username/todoapp-api.git
+    ```
+2. Navigate to the project directory:
+    ```bash
+    cd todoapp-api
+    ```
+3. Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4. Set up environment variables for database configuration and JWT secret key.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. Run the Flask app:
+    ```bash
+    flask run
+    ```
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Seeding the Database
+The system creates a default admin during the initial setup. To seed the database:
+```bash
+flask db seed
