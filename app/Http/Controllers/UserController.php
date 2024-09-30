@@ -1,10 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -24,8 +27,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        if (!$user)
-        {
+        if (!$user) {
             return response()->json([
                 'message' => 'No users with this ID found'
             ], 404);
@@ -34,8 +36,7 @@ class UserController extends Controller
             'first_name' => "required|string|max:255",
             'last_name' => "required|string|max:255",
         ]);
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
         $user->first_name = $request->first_name;
@@ -54,8 +55,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if (!$user)
-        {
+        if (!$user) {
             return response()->json([
                 'message' => 'No users with this ID found'
             ], 404);
@@ -67,12 +67,56 @@ class UserController extends Controller
     }
 
     /**
+     * update_self - allow the connect user to modify his informations
+     */
+    public function update_self(Request $request, User $user)
+    {
+        if (Auth::id() !== $user->id) {
+            return response()->json([
+                "message" => "Unauthorized"
+            ], 403);
+        }
+        $validator = Validator::make($request->all(), [
+            'first_name' => "sometimes|nullable|string|max:255",
+            'last_name' => "sometimes|nullable|string|max:255",
+            'password' => 'nullable|string|min:8|confirmed',
+            'profile' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        if ($request->has('first_name')) {
+            $user->first_name = $request->first_name;
+        }
+        if ($request->has('last_name')) {
+            $user->last_name = $request->last_name;
+        }
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        if ($request->hasFile('profile')) {
+            if ($user->profile) {
+                Storage::disk('public')->delete($user->profile);
+            }
+            $user->profile = $request->file('profile')->store('profiles', 'public');
+        }
+    
+        $user->save();
+        return response()->json([
+            'message' => 'User updated successfully',
+            'user' => $user
+        ], 200);
+    }
+
+    /**
      * register - user to register
      */
     public function register(Request $request)
     {
-        if(User::where('email', $request->email)->exits())
-        {
+        if (User::where('email', $request->email)->exits()) {
             return response()->json([
                 'message' =>  'User with this email already exits'
             ], 409);
@@ -85,13 +129,12 @@ class UserController extends Controller
             'profile' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
         $profilePath = null;
-        if ($request->hasFile('profile')){
+        if ($request->hasFile('profile')) {
             $profilePath = $request->file('profile')->store('profiles', 'public');
         }
 
@@ -105,7 +148,7 @@ class UserController extends Controller
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
-        
+
         return response()->json([
             'user' => $user,
             'token' => $token,
@@ -123,16 +166,14 @@ class UserController extends Controller
             'password' => 'required|string'
         ]);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->errors()
             ], 422);
         }
 
         $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password))
-        {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'message' => 'Invalid login credential'
             ], 401);
