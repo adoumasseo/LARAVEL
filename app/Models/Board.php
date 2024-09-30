@@ -17,7 +17,8 @@ class Board extends Model
      */
     protected $fillable = [
         'board_name',
-        'status'
+        'status',
+        'user_id'
     ];
 
     public function user(): BelongsTo

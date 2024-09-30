@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BoardController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,4 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('logout', [UserController::class, 'logout']);
     Route::put('user/update-profile/{user}', [UserController::class, 'update_self']);
+    Route::get('user/boards', [BoardController::class, 'index']);
+    Route::post('user/create-board', [BoardController::class, 'create']);
+    Route::put('user/update-board/{board}', [BoardController::class, 'update']);
+    Route::delete('user/delete-board/{board}', [BoardController::class, 'destroy']);
 });

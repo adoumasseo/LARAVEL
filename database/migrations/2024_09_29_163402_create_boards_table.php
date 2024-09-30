@@ -17,7 +17,6 @@ return new class extends Migration
             $table->enum('status', ['active', 'archived', 'deleted'])->default('active');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

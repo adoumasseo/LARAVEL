@@ -15,9 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('content');
             $table->enum('status', ['todo', 'doing', 'done'])->default('todo');
-            $table->foreignId('board_id')->constrained();
+            $table->foreignId('board_id')->constrained()->onDelete("cascade");
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
