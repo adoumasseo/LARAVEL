@@ -84,5 +84,4 @@ class UserUpdateTest extends TestCase
         $response->assertStatus(422);
         $response->assertJsonValidationErrors('first_name');
     }
-    
 }
