@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display all users for the admin user
      */
     public function index()
     {
@@ -23,7 +23,7 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * update an user info only if it's admin
      */
     public function update(Request $request, User $user)
     {
@@ -51,7 +51,7 @@ class UserController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the user if it's admin only
      */
     public function destroy(User $user)
     {
@@ -67,7 +67,8 @@ class UserController extends Controller
     }
 
     /**
-     * update_self - allow the connect user to modify his informations
+     * allow the connect user to modify his informations
+     * admin and user can use it
      */
     public function update_self(Request $request, User $user)
     {
@@ -79,7 +80,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'first_name' => "sometimes|required|string|max:255",
             'last_name' => "sometimes|required|string|max:255",
-            'password' => 'nullable|string|min:8',
+            'password' => 'nullable|string|min:8|confirmed',
             'profile' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
@@ -112,11 +113,11 @@ class UserController extends Controller
     }
 
     /**
-     * register - user to register
+     * register - user to register or create and new user
      */
     public function register(Request $request)
     {
-        if (User::where('email', $request->email)->exits()) {
+        if (User::where('email', $request->email)->exists()) {
             return response()->json([
                 'message' =>  'User with this email already exits'
             ], 409);

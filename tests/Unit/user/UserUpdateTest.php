@@ -33,6 +33,7 @@ class UserUpdateTest extends TestCase
             'first_name' => 'UpdatedFirstName',
             'last_name' => 'UpdatedLastName',
             'password' => 'new_password',
+            'password_confirmation' => 'new_password',
             'profile' => $file,
         ]);
 
