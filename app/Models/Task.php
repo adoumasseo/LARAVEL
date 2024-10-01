@@ -17,7 +17,8 @@ class Task extends Model
      */
     protected $fillable = [
         'content',
-        'status'
+        'status',
+        'board_id',
     ];
     public function board(): BelongsTo
     {

@@ -46,27 +46,21 @@ class BoardController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
-    public function show(Board $board)
+    public function show(int $id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Board $board)
-    {
-        //
+        $board = Board::find($id);
+        if(!$board)
+        {
+            return response()->json([
+                'message' => 'No board with this ID found'
+            ], 404);
+        }
+        $tasks = $board->tasks;
+        return response()->json([
+            'tasks' => $tasks
+        ], 200);
     }
 
     /**

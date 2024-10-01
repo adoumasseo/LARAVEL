@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\Board;
 use App\Models\User;
+use App\Models\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -156,19 +157,71 @@ class BoardTest extends TestCase
     }
 
     /** @test */
-public function deleting_non_existent_board_returns_404()
-{
-    // Acting as the created user
-    $this->actingAs($this->user);
+    public function deleting_non_existent_board_returns_404()
+    {
+        // Acting as the created user
+        $this->actingAs($this->user);
 
-    // Perform DELETE request for non-existent board
-    $response = $this->deleteJson("/api/user/delete-board/99999");
+        // Perform DELETE request for non-existent board
+        $response = $this->deleteJson("/api/user/delete-board/99999");
 
-    // Assert response status
-    $response->assertStatus(404);
-    
-    // Assert the message returned
-    $response->assertJson(['message' => 'No board with this ID found']);
-}
+        // Assert response status
+        $response->assertStatus(404);
 
+        // Assert the message returned
+        $response->assertJson(['message' => 'No board with this ID found']);
+    }
+
+    /**
+     * Test showing tasks for an existing board
+     */
+    public function test_can_show_board_tasks()
+    {
+        // Create a board associated with the current user
+        $board = Board::factory()->create([
+            'user_id' => $this->user->id
+        ]);
+
+        // Create some tasks associated with this board
+        $tasks = Task::factory()->count(3)->create([
+            'board_id' => $board->id
+        ]);
+
+        // Act as the current user and make a GET request to the show route
+        $response = $this->actingAs($this->user)->get("/api/user/board-get-tasks/{$board->id}");
+
+        // Assert the response status is 200 (success)
+        $response->assertStatus(200);
+
+        // Assert that the returned JSON structure contains tasks
+        $response->assertJsonStructure([
+            'tasks' => [
+                '*' => [
+                    'id',
+                    'content',
+                    'board_id',
+                ]
+            ]
+        ]);
+
+        // Assert that the number of tasks returned is correct
+        $response->assertJsonCount(3, 'tasks');
+    }
+
+    /**
+     * Test showing tasks for a non-existent board
+     */
+    public function test_cannot_show_tasks_if_board_not_found()
+    {
+        // Try to access a board that doesn't exist (ID 999)
+        $response = $this->actingAs($this->user)->get('/api/user/board-get-tasks/999');
+
+        // Assert the response status is 404 (not found)
+        $response->assertStatus(404);
+
+        // Assert that the returned JSON contains the correct error message
+        $response->assertJson([
+            'message' => 'No board with this ID found'
+        ]);
+    }
 }
