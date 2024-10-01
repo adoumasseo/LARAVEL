@@ -59,7 +59,7 @@ class AdminCrudTest extends TestCase
         ];
 
         // Act as the admin user
-        $response = $this->actingAs($admin)->put("/api/admin/update-user/{$user->id}", $updatedData);
+        $response = $this->actingAs($admin)->put("/api/admin/users/{$user->id}", $updatedData);
 
         // Assert response
         $response->assertStatus(200)
@@ -91,7 +91,7 @@ class AdminCrudTest extends TestCase
         ];
 
         // Act as the admin user
-        $response = $this->actingAs($admin)->put("/api/admin/update-user/{$user->id}", $invalidData);
+        $response = $this->actingAs($admin)->put("/api/admin/users/{$user->id}", $invalidData);
 
         // Assert response
         $response->assertStatus(422)
@@ -107,7 +107,7 @@ class AdminCrudTest extends TestCase
         $user = User::factory()->create();
 
         // Act as the admin user
-        $response = $this->actingAs($admin)->delete("/api/admin/delete-user/{$user->id}");
+        $response = $this->actingAs($admin)->delete("/api/admin/users/{$user->id}");
 
         // Assert response
         $response->assertStatus(204);
@@ -122,7 +122,7 @@ class AdminCrudTest extends TestCase
         $admin = User::factory()->create(['role' => 'admin']);
 
         // Act as the admin user
-        $response = $this->actingAs($admin)->delete("/api/admin/delete-user/9999");
+        $response = $this->actingAs($admin)->delete("/api/admin/users/9999");
 
         // Assert response
         $response->assertStatus(404)

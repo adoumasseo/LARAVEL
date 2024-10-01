@@ -29,7 +29,7 @@ class UserUpdateTest extends TestCase
         $file = UploadedFile::fake()->image('profile.jpg');
 
         // Make the update request
-        $response = $this->json('PUT', "/api/user/update-profile/{$user->id}", [
+        $response = $this->json('PUT', "/api/user/profile/{$user->id}", [
             'first_name' => 'UpdatedFirstName',
             'last_name' => 'UpdatedLastName',
             'password' => 'new_password',
@@ -58,7 +58,7 @@ class UserUpdateTest extends TestCase
         $this->actingAs($user1);
 
         // Attempt to update user2's data
-        $response = $this->json('PUT', "/api/user/update-profile/{$user2->id}", [
+        $response = $this->json('PUT', "/api/user/profile/{$user2->id}", [
             'first_name' => 'UpdatedFirstName',
         ]);
 
@@ -76,7 +76,7 @@ class UserUpdateTest extends TestCase
         $this->actingAs($user);
 
         // Send invalid data
-        $response = $this->json('PUT', "/api/user/update-profile/{$user->id}", [
+        $response = $this->json('PUT', "/api/user/profile/{$user->id}", [
             'first_name' => '', // invalid (empty)
         ]);
 

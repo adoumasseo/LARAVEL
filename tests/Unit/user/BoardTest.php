@@ -56,7 +56,7 @@ class BoardTest extends TestCase
         $data = ['board_name' => 'My New Board'];
 
         // Perform POST request
-        $response = $this->postJson('/api/user/create-board', $data);
+        $response = $this->postJson('/api/user/boards', $data);
 
         // Assert response status
         $response->assertStatus(200);
@@ -81,7 +81,7 @@ class BoardTest extends TestCase
         $data = ['board_name' => ''];
 
         // Perform POST request
-        $response = $this->postJson('/api/user/create-board', $data);
+        $response = $this->postJson('/api/user/boards', $data);
 
         // Assert response status
         $response->assertStatus(422);
@@ -103,7 +103,7 @@ class BoardTest extends TestCase
         $updateData = ['board_name' => 'Updated Board', 'status' => 'archived'];
 
         // Perform PUT request
-        $response = $this->putJson("/api/user/update-board/{$board->id}", $updateData);
+        $response = $this->putJson("/api/user/boards/{$board->id}", $updateData);
 
         // Assert response status
         $response->assertStatus(200);
@@ -131,7 +131,7 @@ class BoardTest extends TestCase
         $updateData = ['board_name' => '', 'status' => 'invalid'];
 
         // Perform PUT request
-        $response = $this->putJson("/api/user/update-board/{$board->id}", $updateData);
+        $response = $this->putJson("/api/user/boards/{$board->id}", $updateData);
 
         // Assert response status
         $response->assertStatus(422);
@@ -150,7 +150,7 @@ class BoardTest extends TestCase
         $board = Board::factory()->create(['user_id' => $this->user->id]);
 
         // Perform DELETE request
-        $response = $this->deleteJson("/api/user/delete-board/{$board->id}");
+        $response = $this->deleteJson("/api/user/boards/{$board->id}");
 
         // Assert response status
         $response->assertStatus(204);
@@ -163,7 +163,7 @@ class BoardTest extends TestCase
         $this->actingAs($this->user);
 
         // Perform DELETE request for non-existent board
-        $response = $this->deleteJson("/api/user/delete-board/99999");
+        $response = $this->deleteJson("/api/user/boards/9999");
 
         // Assert response status
         $response->assertStatus(404);
@@ -188,7 +188,7 @@ class BoardTest extends TestCase
         ]);
 
         // Act as the current user and make a GET request to the show route
-        $response = $this->actingAs($this->user)->get("/api/user/board-get-tasks/{$board->id}");
+        $response = $this->actingAs($this->user)->get("/api/user/boards/{$board->id}/tasks");
 
         // Assert the response status is 200 (success)
         $response->assertStatus(200);
@@ -214,7 +214,7 @@ class BoardTest extends TestCase
     public function test_cannot_show_tasks_if_board_not_found()
     {
         // Try to access a board that doesn't exist (ID 999)
-        $response = $this->actingAs($this->user)->get('/api/user/board-get-tasks/999');
+        $response = $this->actingAs($this->user)->get('/api/user/boards/999/tasks');
 
         // Assert the response status is 404 (not found)
         $response->assertStatus(404);
