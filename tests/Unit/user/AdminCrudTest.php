@@ -12,6 +12,8 @@ use Tests\TestCase;
 
 class AdminCrudTest extends TestCase
 {
+    use RefreshDatabase;
+    
     public function test_admin_can_view_all_users()
     {
         // Create an admin user
