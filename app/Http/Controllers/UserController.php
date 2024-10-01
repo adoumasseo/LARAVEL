@@ -33,17 +33,23 @@ class UserController extends Controller
             ], 404);
         }
         $validator = Validator::make($request->all(), [
-            'first_name' => "required|string|max:255",
-            'last_name' => "required|string|max:255",
+            'first_name' => "sometimes|required|string|max:255",
+            'last_name' => "sometimes|required|string|max:255",
         ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        $user->first_name = $request->first_name;
-        $user->last_name = $request->last_name;
+        if ($request->has('first_name'))
+        {
+            $user->first_name = $request->first_name;
+        }
+        if ($request->has('last_name'))
+        {
+            $user->last_name = $request->last_name;
+        }
+
         $user->save();
-
-
+        
         return response()->json([
             'message' => 'User updated successfully',
             'user' => $user
