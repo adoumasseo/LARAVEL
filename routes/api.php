@@ -43,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // cruds for tasks endpoint
     Route::get('user/tasks', [TaskController::class, 'index']);
     Route::get('user/tasks/{task}', [TaskController::class, 'show']);
-    Route::post('user/tasks', [TaskController::class, 'create']);
+    Route::post('user/tasks/{board}', [TaskController::class, 'create']);
     Route::put('user/tasks/{task}', [TaskController::class, 'update']);
     Route::delete('user/tasks/{task}', [TaskController::class, 'destroy']);
 });
