@@ -113,4 +113,17 @@ class AdminCrudTest extends TestCase
         // Assert the user was deleted from the database
         $this->assertDatabaseMissing('users', ['id' => $user->id]);
     }
+
+    public function test_admin_cannot_delete_user_if_not_found()
+    {
+        // Create an admin user
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        // Act as the admin user
+        $response = $this->actingAs($admin)->delete("/api/admin/delete-user/9999");
+
+        // Assert response
+        $response->assertStatus(404)
+            ->assertJson(['message' => 'No users with this ID found']);
+    }
 }

@@ -49,7 +49,7 @@ class UserController extends Controller
         }
 
         $user->save();
-        
+
         return response()->json([
             'message' => 'User updated successfully',
             'user' => $user
@@ -59,8 +59,9 @@ class UserController extends Controller
     /**
      * Remove the user if it's admin only
      */
-    public function destroy(User $user)
+    public function destroy(int $id)
     {
+        $user = User::find($id);
         if (!$user) {
             return response()->json([
                 'message' => 'No users with this ID found'
