@@ -104,8 +104,9 @@ class BoardController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Board $board)
+    public function destroy(int $id)
     {
+        $board = Board::find($id);
         if (!$board) {
             return response()->json([
                 'message' => 'No board with this ID found'
