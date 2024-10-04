@@ -29,7 +29,7 @@ class BoardController extends Controller
         $currentUser = auth()->user();
         $validator = Validator::make($request->all(), [
             'board_name' => "required|string|max:255",
-        ]);
+        ]); 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
@@ -59,6 +59,7 @@ class BoardController extends Controller
         }
         $tasks = $board->tasks;
         return response()->json([
+            'board' => $board,
             'tasks' => $tasks
         ], 200);
     }
