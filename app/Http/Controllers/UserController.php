@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
+
 class UserController extends Controller
 {
     /**
@@ -156,7 +157,6 @@ class UserController extends Controller
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
             'user' => $user,
             'token' => $token,
@@ -189,7 +189,8 @@ class UserController extends Controller
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             'message' => 'Login successful',
-            'token' => $token
+            'token' => $token,
+            'user' => $user
         ], 200);
     }
 
